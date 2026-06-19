@@ -1,3 +1,15 @@
+/**
+ * --------------------------------------------------------------------------
+ * ENTERPRISE DASHBOARD SANDBOX FRAMEWORK
+ * --------------------------------------------------------------------------
+ * @package    SaaSAdmin / AdminCore
+ * @author     Long Tran <Senior IT Project Leader & Design Engineer>
+ * @version    1.0.0 (Vue 3 + Tailwind CSS v3 Hybrid)
+ * @created    June 2026
+ * * NOTE: This project is custom-built from scratch to demonstrate 1-1 mapping 
+ * efficiency between Figma Local Variables (UI3) and Tailwind CSS configuration.
+ * --------------------------------------------------------------------------
+ */
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: 'class',

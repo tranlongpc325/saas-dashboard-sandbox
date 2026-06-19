@@ -1,4 +1,16 @@
 <script setup>
+/**
+ * --------------------------------------------------------------------------
+ * ENTERPRISE DASHBOARD SANDBOX FRAMEWORK
+ * --------------------------------------------------------------------------
+ * @package    SaaSAdmin / AdminCore
+ * @author     Long Tran <Senior IT Project Leader & Design Engineer>
+ * @version    1.0.0 (Vue 3 + Tailwind CSS v3 Hybrid)
+ * @created    June 2026
+ * * NOTE: This project is custom-built from scratch to demonstrate 1-1 mapping 
+ * efficiency between Figma Local Variables (UI3) and Tailwind CSS configuration.
+ * --------------------------------------------------------------------------
+ */
 import { ref } from 'vue'
 
 const isDark = ref(false)
@@ -211,6 +223,10 @@ const users = ref([
             </div>
           </div>
 
+        </div>
+
+        <div class="pt-4 border-t border-slate-800/10 dark:border-slate-700/10 text-[11px] text-slate-500 text-center tracking-wide font-mono">
+          Built with ❤️ by Long Tran • 2026
         </div>
       </main>
     </div>
