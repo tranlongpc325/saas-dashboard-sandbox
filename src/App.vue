@@ -13,6 +13,8 @@
  */
 import { ref } from 'vue'
 
+import { onMounted } from 'vue'
+
 const isDark = ref(false)
 const toggleDarkMode = () => {
   isDark.value = !isDark.value
@@ -22,6 +24,22 @@ const toggleDarkMode = () => {
     document.documentElement.classList.remove('dark')
   }
 }
+
+onMounted(async () => {
+  try {
+    const response = await fetch('http://design-tokens-api.test/api/v1/themes/active');
+    if (!response.ok) {
+      throw new Error('Failed to fetch theme data')
+    }
+    const responseData = await response.json()
+    const data = JSON.parse(responseData['data'])
+    Object.keys(data).forEach(key => {
+      document.documentElement.style.setProperty(key, data[key])
+    })
+  } catch (error) {
+    console.error('Error loading theme:', error)
+  }
+})
 
 const users = ref([
   { id: 1, name: 'Sarah Johnson', email: 's.johnson@company.com', role: 'Admin', status: 'Active', lastActive: 'Today, 09:41 AM', initial: 'SJ' },
