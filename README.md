@@ -15,7 +15,7 @@ A high-fidelity production SaaS dashboard built to showcase pixel-perfect design
 - **Deployment Platform:** Vercel (Edge network global hosting with automated continuous deployment hooks)
 
 ## 🔗 Project Ecosystem Links
-- **Figma Design Specification (View-Only):** https://www.figma.com/design/NV1vGbz8QPH4VNaH6uYS1y/User-Management-Dashboard?node-id=30-3141&t=SmdUjnhahXkjV3vV-1
+- **Figma Design Specification (View-Only):** [Figma Design](https://www.figma.com/design/NV1vGbz8QPH4VNaH6uYS1y/User-Management-Dashboard?node-id=30-3141&t=SmdUjnhahXkjV3vV-1)
 - **Live Application Demo:** https://saas-dashboard-sandbox.vercel.app
 - **Associated Micro-backend Repository:** https://github.com/tranlongpc325/design-tokens-api
 
@@ -28,8 +28,7 @@ A high-fidelity production SaaS dashboard built to showcase pixel-perfect design
 ### Step-by-Step Configuration
 1. **Clone the repository and navigate to the project directory:**
    ```bash
-   git clone [https://github.com/your-github-username/saas-dashboard-sandbox.git](https://github.com/your-github-username/saas-dashboard-sandbox.git)
-   cd saas-dashboard-sandbox
+   git clone https://github.com/your-github-username/saas-dashboard-sandbox.git
    ```
 
 2. **Install all production and development dependencies:**
@@ -40,7 +39,7 @@ A high-fidelity production SaaS dashboard built to showcase pixel-perfect design
 3. **Configure local environment orchestration:**
 Create a `.env.development` file in the root directory to define your local API endpoint:
    ```env
-   VITE_API_BASE=[http://127.0.0.1:8000/api/v1/themes](http://127.0.0.1:8000/api/v1/themes)
+   VITE_API_BASE=http://127.0.0.1:8000/api/v1/themes
    ```
 
 4. **Boot up the Vite local HMR development server:**
