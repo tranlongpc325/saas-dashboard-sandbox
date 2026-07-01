@@ -172,7 +172,7 @@ const users = ref([
         <section class="mb-8 bg-surface-card rounded-card shadow-sm border border-text-body/5 overflow-hidden transition-all duration-200">
           <div class="p-5 border-b border-text-body/10 flex items-center justify-between gap-4">
             <div>
-              <h2 class="text-lg font-bold text-text-title">Headless CMS Theme Controller</h2>
+              <h1 class="text-[26px] font-bold text-text-title tracking-tight">Headless Theme Controller</h1>
               <p class="text-sm text-text-body mt-1">
                 Active theme from Backend:
                 <span class="font-semibold text-text-title capitalize">{{ activeThemeName ?? '—' }}</span>
