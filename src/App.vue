@@ -11,35 +11,80 @@
  * efficiency between Figma Local Variables (UI3) and Tailwind CSS configuration.
  * --------------------------------------------------------------------------
  */
-import { ref } from 'vue'
+ import { ref, computed, onMounted } from 'vue'
 
-import { onMounted } from 'vue'
+const API_BASE = 'http://design-tokens-api.test/api/v1/themes'
 
-const isDark = ref(false)
-const toggleDarkMode = () => {
-  isDark.value = !isDark.value
-  if (isDark.value) {
-    document.documentElement.classList.add('dark')
-  } else {
-    document.documentElement.classList.remove('dark')
+const themeTokens = ref(null)
+const activeThemeName = ref(null)   // 'light' | 'dark'
+const themeLoading = ref(false)
+const themeError = ref(null)
+
+const applyButtonLabel = computed(() => {
+  if (themeLoading.value) return 'Applying...'
+  return activeThemeName.value === 'dark'
+    ? 'Apply Light Mode'
+    : 'Apply Dark Mode'
+})
+
+const targetThemeName = computed(() =>
+  activeThemeName.value === 'dark' ? 'light' : 'dark'
+)
+
+function parseTokens(raw) {
+  return typeof raw === 'string' ? JSON.parse(raw) : raw
+}
+
+function applyThemeTokens(tokens) {
+  Object.entries(tokens).forEach(([key, value]) => {
+    document.documentElement.style.setProperty(key, value)
+  })
+}
+
+function applyThemePayload(payload) {
+  const tokens = parseTokens(payload.tokens)
+  applyThemeTokens(tokens)
+  themeTokens.value = tokens
+  activeThemeName.value = payload.theme_name
+}
+
+async function loadActiveTheme() {
+  themeLoading.value = true
+  themeError.value = null
+  try {
+    const response = await fetch(`${API_BASE}/active`)
+    if (!response.ok) throw new Error('Failed to fetch active theme')
+    const json = await response.json()
+    applyThemePayload(json.data)
+  } catch (err) {
+    themeError.value = err.message
+    console.error(err)
+  } finally {
+    themeLoading.value = false
   }
 }
 
-onMounted(async () => {
+async function toggleThemeFromBackend() {
+  themeLoading.value = true
+  themeError.value = null
   try {
-    const response = await fetch('http://design-tokens-api.test/api/v1/themes/active');
-    if (!response.ok) {
-      throw new Error('Failed to fetch theme data')
-    }
-    const responseData = await response.json()
-    const data = JSON.parse(responseData['data'])
-    Object.keys(data).forEach(key => {
-      document.documentElement.style.setProperty(key, data[key])
+    const response = await fetch(`${API_BASE}/activate`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ theme_name: targetThemeName.value }),
     })
-  } catch (error) {
-    console.error('Error loading theme:', error)
+    if (!response.ok) throw new Error('Failed to activate theme')
+    const json = await response.json()
+    applyThemePayload(json.data)
+  } catch (err) {
+    themeError.value = err.message
+    console.error(err)
+  } finally {
+    themeLoading.value = false
   }
-})
+}
+
+onMounted(loadActiveTheme)
 
 const users = ref([
   { id: 1, name: 'Sarah Johnson', email: 's.johnson@company.com', role: 'Admin', status: 'Active', lastActive: 'Today, 09:41 AM', initial: 'SJ' },
@@ -103,11 +148,7 @@ const users = ref([
           <input type="text" placeholder="Search users, emails..." class="w-full pl-11 pr-4 py-2.5 bg-surface-main rounded-button text-sm text-text-title placeholder-text-body/50 focus:outline-none focus:ring-1 focus:ring-brand-primary transition-colors" />
         </div>
         
-        <div class="flex items-center gap-6">
-          <button @click="toggleDarkMode" class="text-text-body/70 hover:text-text-title transition-colors p-2">
-            <span>{{ isDark ? '☀️' : '🌙' }}</span>
-          </button>
-          
+        <div class="flex items-center gap-6">          
           <button class="text-text-body/70 hover:text-text-title transition-colors relative p-2">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
             <span class="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-surface-card"></span>
@@ -127,6 +168,34 @@ const users = ref([
       </header>
 
       <main class="flex-1 p-8 overflow-y-auto bg-surface-main transition-colors duration-200">
+        <!-- Theme Controller -->
+        <section class="mb-8 bg-surface-card rounded-card shadow-sm border border-text-body/5 overflow-hidden transition-all duration-200">
+          <div class="p-5 border-b border-text-body/10 flex items-center justify-between gap-4">
+            <div>
+              <h2 class="text-lg font-bold text-text-title">Headless CMS Theme Controller</h2>
+              <p class="text-sm text-text-body mt-1">
+                Active theme from Backend:
+                <span class="font-semibold text-text-title capitalize">{{ activeThemeName ?? '—' }}</span>
+              </p>
+            </div>
+            <button
+              @click="toggleThemeFromBackend"
+              :disabled="themeLoading || !activeThemeName"
+              class="bg-brand-primary text-white px-4 py-2.5 rounded-button text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-all shrink-0"
+            >
+              {{ applyButtonLabel }}
+            </button>
+          </div>
+
+          <div class="p-5">
+            <p v-if="themeError" class="text-sm text-red-500 mb-3">{{ themeError }}</p>
+            <pre
+              v-if="themeTokens"
+              class="text-xs font-mono bg-surface-main p-4 rounded-button overflow-x-auto text-text-body border border-text-body/10"
+            >{{ JSON.stringify(themeTokens, null, 2) }}</pre>
+            <p v-else class="text-sm text-text-body">Loading tokens...</p>
+          </div>
+        </section>
         
         <div class="flex justify-between items-center mb-8">
           <div>
