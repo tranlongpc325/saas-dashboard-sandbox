@@ -13,7 +13,7 @@
  */
  import { ref, computed, onMounted } from 'vue'
 
-const API_BASE = 'http://design-tokens-api.test/api/v1/themes'
+const API_BASE = import.meta.env.VITE_API_BASE
 
 const themeTokens = ref(null)
 const activeThemeName = ref(null)   // 'light' | 'dark'
